@@ -1,77 +1,46 @@
-cmake_minimum_required(VERSION 2.6)
-
-project(cudaSift)
-set(cudaSift_VERSION_MAJOR 2)
-set(cudaSift_VERSION_MINOR 0)
-set(cudaSift_VERSION_PATCH 0)
-
-set(CPACK_PACKAGE_VERSION_MAJOR "${cudaSift_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${cudaSift_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${cudaSift_VERSION_PATCH}")
-set(CPACK_GENERATOR "ZIP")
-include(CPack)
+cmake_minimum_required(VERSION 2.8)
+project(cudasift)
 
 find_package(OpenCV REQUIRED)
-find_package(CUDA)
-if (NOT CUDA_FOUND)
-  message(STATUS "CUDA not found. Project will not be built.")
-endif(NOT CUDA_FOUND)
+find_package(CUDA REQUIRED)
+#remove this as soon as eigen is shipped with FindEigen.cmake
+  get_filename_component(EIGEN_ROOT "/usr/include/local/eigen3" PATH)
+  if(PKG_CONFIG_FOUND)
+    pkg_check_modules(PC_EIGEN eigen3)
+  endif(PKG_CONFIG_FOUND)
+  find_path(EIGEN_INCLUDE_DIRS Eigen/Core
+    HINTS ${PC_EIGEN_INCLUDEDIR} ${PC_EIGEN_INCLUDE_DIRS} 
+          "${EIGEN_ROOT}" "$ENV{EIGEN_ROOT}"
+    PATHS "$ENV{PROGRAMFILES}/Eigen 3.0.0" "$ENV{PROGRAMW6432}/Eigen 3.0.0"
+          "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"   
+    PATH_SUFFIXES eigen3 include/eigen3 include)
+  find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
+  set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS} -DEIGEN_USE_NEW_STDVECTOR 
+-DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 
-if (WIN32)
-  set(EXTRA_CXX_FLAGS "/DVERBOSE /D_CRT_SECURE_NO_WARNINGS ")
-  list(APPEND CUDA_NVCC_FLAGS "-arch=sm_35;--compiler-options;-O2;-DVERBOSE") 
-endif()
-if (UNIX)
-  if (APPLE)
-    set(EXTRA_CXX_FLAGS "-DVERBOSE -msse2")
-    list(APPEND CUDA_NVCC_FLAGS "-arch=sm_35;--compiler-options;-O2;-DVERBOSE") 
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -msse2 ")
-    list(APPEND CUDA_NVCC_FLAGS "-lineinfo;--compiler-options;-O2;-DVERBOSE") 
-  endif()
-endif()
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+include(CudaComputeTargetFlags.cmake)
+append_target_arch_flags()
 
-set(cuda_sources
-  # dynamic.cu
-  cudaImage.cu  
-  cudaImage.h  
-  cudaSiftH.cu 
-  cudaSiftH.h  
-  matching.cu  
-  cudaSiftD.h  
-  cudaSift.h  
-  cudautils.h
-)  
+set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_CXX_FLAGS "-O3 -msse2 -msse3 -Wall -std=c++11")
+set(CUDA_ARCH_BIN "20 30 32 35 37 50 52 61" CACHE STRING "Specify 'real' GPU arch to build binaries for, BIN(PTX) format is supported. Example: 1.3 2.1(1.3) or 13 21(13)")
+set(CUDA_ARCH_PTX "" CACHE STRING "Specify 'virtual' PTX arch to build PTX intermediate code for. Example: 1.0 1.2 or 10 12")
 
-set(sources
-  geomFuncs.cpp  
-  mainSift.cpp
-)
+list(APPEND CUDA_NVCC_FLAGS "-O3;-Xcompiler;")
 
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR} 
-)
+include_directories(include)
+include_directories(${CUDA_INCLUDE_DIRS})
+include_directories(${EIGEN_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS})
 
-SET(CUDA_SEPARABLE_COMPILATION ON)
+file(GLOB_RECURSE cuda_sources src/*.cu)
+file(GLOB_RECURSE cpp_sources src/*.cpp)
 
-cuda_add_executable(cudasift ${cuda_sources} ${sources} OPTIONS -arch=sm_35)
+# set(CUDA_SEPARABLE_COMPILATION ON)
 
-set_target_properties(cudasift PROPERTIES
-  COMPILE_FLAGS "${EXTRA_CXX_FLAGS}"			   
-)
-
-target_link_libraries(cudasift
-  /usr/local/cuda/lib64/libcudadevrt.a ${OpenCV_LIBS} 
-)
- 
-install(FILES 
-  ${cuda_sources} 
-  ${sources}
-  cudaSiftD.cu
-  CMakeLists.txt
-  Copyright.txt
-  DESTINATION .
-)
-install(FILES data/left.pgm data/righ.pgm
-  DESTINATION data
-)
+cuda_compile(cuda_objects ${cuda_sources})
+# cuda_add_executable(cudasift ${cuda_sources} ${cpp_sources})
+add_executable(cudasift ${cuda_sources} ${cuda_objects} ${cpp_sources})
+# add_library(cudasift SHARED ${cuda_sources} ${cuda_objects} ${cpp_sources})
+target_link_libraries(cudasift ${Eigen_LIBRARIES} ${CUDA_LIBRARIES} ${OpenCV_LIBS})
