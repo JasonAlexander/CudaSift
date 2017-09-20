@@ -1,3 +1,0 @@
-/home/kzampog/Coding/CudaSift/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/kzampog/Coding/CudaSift/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/kzampog/Coding/CudaSift/cmake-build-debug/CMakeFiles/cudasift.dir

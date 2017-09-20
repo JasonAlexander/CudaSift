@@ -4,8 +4,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/cuda_compile.dir/src/cuda_compile_generated_cudaSiftHD.cu.o"
   "CMakeFiles/cudasift.dir/src/mainSift.cpp.o"
   "CMakeFiles/cudasift.dir/src/geomFuncs.cpp.o"
-  "cudasift.pdb"
-  "cudasift"
+  "libcudasift.pdb"
+  "libcudasift.so"
 )
 
 # Per-language clean rules from dependency scanning.

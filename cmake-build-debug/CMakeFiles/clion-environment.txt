@@ -1,2 +1,0 @@
-Options: 
-CMake: 3.8.2@/home/kzampog/clion-2017.1/bin/cmake/bin/cmake

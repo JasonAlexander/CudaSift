@@ -70,7 +70,7 @@ set(generated_file_internal "/home/kzampog/Coding/CudaSift/build/CMakeFiles/cuda
 set(generated_cubin_file_internal "/home/kzampog/Coding/CudaSift/build/CMakeFiles/cuda_compile.dir/src/./cuda_compile_generated_cudaSiftHD.cu.o.cubin.txt") # path
 
 set(CUDA_NVCC_EXECUTABLE "/usr/local/cuda/bin/nvcc") # path
-set(CUDA_NVCC_FLAGS -gencode;arch=compute_61,code=sm_61;-O3;-Xcompiler; ;; ) # list
+set(CUDA_NVCC_FLAGS -gencode;arch=compute_61,code=sm_61;-O3;-Xcompiler;-fPIC ;; ) # list
 # Build specific configuration flags
 set(CUDA_NVCC_FLAGS_RELEASE  ; )
 set(CUDA_NVCC_FLAGS_DEBUG  ; )

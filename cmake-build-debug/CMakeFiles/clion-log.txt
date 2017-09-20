@@ -1,7 +1,0 @@
-/home/kzampog/clion-2017.1/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/kzampog/Coding/CudaSift
--- Found CUDA: /usr/local/cuda (found suitable exact version "8.0") 
--- Found CUDA: /usr/local/cuda (found version "8.0") 
--- CUDA NVCC target flags: -gencode;arch=compute_20,code=sm_20;-gencode;arch=compute_30,code=sm_30;-gencode;arch=compute_32,code=sm_32;-gencode;arch=compute_35,code=sm_35;-gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_52,code=sm_52;-gencode;arch=compute_61,code=sm_61
--- Configuring done
--- Generating done
--- Build files have been written to: /home/kzampog/Coding/CudaSift/cmake-build-debug
