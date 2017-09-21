@@ -13,6 +13,7 @@
 #include <cudasift/cudaSift.h>
 #include <cudasift/cudaSiftD.h>
 #include <cudasift/cudaSiftH.h>
+#include <driver_types.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Kernel configuration
@@ -834,6 +835,7 @@ void ExtractSiftOctave(SiftData &siftData, CudaImage &img, double initBlur, floa
 
 void InitSiftData(SiftData &data, int num, bool host, bool dev)
 {
+  if (data.h_data != NULL || data.d_data != NULL) FreeSiftData(data);
   data.numPts = 0;
   data.maxPts = num;
   int sz = sizeof(SiftPoint)*num;
@@ -859,6 +861,7 @@ void FreeSiftData(SiftData &data)
   data.d_data = NULL;
   if (data.h_data!=NULL)
     free(data.h_data);
+  data.h_data = NULL;
 #endif
   data.numPts = 0;
   data.maxPts = 0;
@@ -1063,3 +1066,52 @@ double FindPointsMulti(CudaImage *sources, SiftData &siftData, float thresh, flo
   return 0.0;
 }
 
+SiftData::SiftData(int num, bool host, bool dev)
+        : h_data(NULL),
+          d_data(NULL)
+{
+    InitSiftData(*this, num, host, dev);
+}
+
+SiftData::~SiftData() {
+    FreeSiftData(*this);
+}
+
+void SiftData::resize(size_t new_size) {
+    if (new_size <= (size_t)maxPts) {
+        numPts = (int)new_size;
+        return;
+    }
+    reserve(new_size);  // Conservative?
+    numPts = (int)new_size;
+}
+
+void SiftData::reserve(size_t new_capacity) {
+    if (new_capacity <= (size_t)maxPts) return;
+
+    size_t mem_sz = new_capacity*sizeof(SiftPoint);
+
+    if (h_data != NULL) {
+        SiftPoint * h_data_old = h_data;
+        h_data = (SiftPoint *)malloc(mem_sz);
+        std::memcpy(h_data, h_data_old, numPts*sizeof(SiftPoint));
+        free(h_data_old);
+    } else {
+        h_data = (SiftPoint *)malloc(mem_sz);
+    }
+
+    if (d_data != NULL) {
+        SiftPoint * d_data_old = d_data;
+        safeCall(cudaMalloc((void **)&d_data, mem_sz));
+        safeCall(cudaMemcpy(d_data, d_data_old, numPts*sizeof(SiftPoint), cudaMemcpyDeviceToDevice));
+        safeCall(cudaFree(d_data_old));
+    } else {
+        safeCall(cudaMalloc((void **)&d_data, mem_sz));
+    }
+
+    maxPts = (int)new_capacity;
+}
+
+void SiftData::freeBuffers() {
+    FreeSiftData(*this);
+}

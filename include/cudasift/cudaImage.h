@@ -5,6 +5,8 @@
 #ifndef CUDAIMAGE_H
 #define CUDAIMAGE_H
 
+#include <cstddef>
+
 class CudaImage {
 public:
   int width, height;

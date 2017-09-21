@@ -21,7 +21,7 @@ typedef struct {
   float data[128];
 } SiftPoint;
 
-typedef struct {
+typedef struct SiftData {
   int numPts;         // Number of available Sift points
   int maxPts;         // Number of allocated Sift points
 #ifdef MANAGEDMEM
@@ -30,6 +30,14 @@ typedef struct {
   SiftPoint *h_data;  // Host (CPU) data
   SiftPoint *d_data;  // Device (GPU) data
 #endif
+  SiftData(int num = 4096, bool host = true, bool dev = true);
+  ~SiftData();
+  void resize(size_t new_size);
+  void reserve(size_t new_capacity);
+  void freeBuffers();
+  inline void clear() { numPts = 0; }
+  inline size_t size() { return (size_t)numPts; }
+  inline size_t capacity() { return (size_t)maxPts; }
 } SiftData;
 
 void InitCuda(int devNum = 0);

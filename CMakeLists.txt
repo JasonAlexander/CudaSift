@@ -3,20 +3,6 @@ project(cudasift)
 
 find_package(OpenCV REQUIRED)
 find_package(CUDA REQUIRED)
-#remove this as soon as eigen is shipped with FindEigen.cmake
-  get_filename_component(EIGEN_ROOT "/usr/include/local/eigen3" PATH)
-  if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_EIGEN eigen3)
-  endif(PKG_CONFIG_FOUND)
-  find_path(EIGEN_INCLUDE_DIRS Eigen/Core
-    HINTS ${PC_EIGEN_INCLUDEDIR} ${PC_EIGEN_INCLUDE_DIRS} 
-          "${EIGEN_ROOT}" "$ENV{EIGEN_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/Eigen 3.0.0" "$ENV{PROGRAMW6432}/Eigen 3.0.0"
-          "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"   
-    PATH_SUFFIXES eigen3 include/eigen3 include)
-  find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
-  set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS} -DEIGEN_USE_NEW_STDVECTOR 
--DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 include(CudaComputeTargetFlags.cmake)
@@ -31,19 +17,19 @@ list(APPEND CUDA_NVCC_FLAGS "-O3;-Xcompiler;-fPIC")
 
 include_directories(include)
 include_directories(${CUDA_INCLUDE_DIRS})
-include_directories(${EIGEN_INCLUDE_DIRS})
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 file(GLOB_RECURSE cuda_sources src/*.cu)
-# file(GLOB_RECURSE cpp_sources src/*.cpp)
-# set(cpp_sources src/mainSift.cpp src/geomFuncs.cpp)
+# file(GLOB_RECURSE cpp_sources src/sift_utilities.cpp)
+set(cpp_sources src/mainSift.cpp src/geomFuncs.cpp)
 
 # set(CUDA_SEPARABLE_COMPILATION ON)
 
 cuda_compile(cuda_objects ${cuda_sources})
 # cuda_add_executable(cudasift ${cuda_sources} ${cpp_sources})
-# add_executable(cudasift ${cuda_sources} ${cuda_objects} ${cpp_sources})
-add_library(cudasift SHARED ${cuda_sources} ${cuda_objects} ${cpp_sources})
-target_link_libraries(cudasift ${Eigen_LIBRARIES} ${CUDA_LIBRARIES} ${OpenCV_LIBS})
+add_executable(cudasift ${cuda_sources} ${cuda_objects} ${cpp_sources})
+# add_library(cudasift SHARED ${cuda_sources} ${cuda_objects} ${cpp_sources})
+# target_link_libraries(cudasift ${CUDA_LIBRARIES})
+target_link_libraries(cudasift ${CUDA_LIBRARIES} ${OpenCV_LIBS})
 
-set_target_properties(cudasift PROPERTIES LINKER_LANGUAGE CXX)
+# set_target_properties(cudasift PROPERTIES LINKER_LANGUAGE CXX)
