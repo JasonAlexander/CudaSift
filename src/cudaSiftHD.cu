@@ -1066,11 +1066,21 @@ double FindPointsMulti(CudaImage *sources, SiftData &siftData, float thresh, flo
   return 0.0;
 }
 
-SiftData::SiftData(int num, bool host, bool dev)
+SiftData::SiftData(int num)
         : h_data(NULL),
           d_data(NULL)
 {
-    InitSiftData(*this, num, host, dev);
+    InitSiftData(*this, num, true, true);
+}
+
+SiftData::SiftData(const SiftData &data)
+        : h_data(NULL),
+          d_data(NULL)
+{
+    InitSiftData(*this, data.maxPts, true, true);
+    numPts = data.numPts;
+    std::memcpy(h_data, data.h_data, numPts*sizeof(SiftPoint));
+    safeCall(cudaMemcpy(d_data, data.d_data, numPts*sizeof(SiftPoint), cudaMemcpyDeviceToDevice));
 }
 
 SiftData::~SiftData() {
@@ -1114,4 +1124,14 @@ void SiftData::reserve(size_t new_capacity) {
 
 void SiftData::freeBuffers() {
     FreeSiftData(*this);
+}
+
+SiftData& SiftData::append(const SiftData &data) {
+    int new_sz = numPts + data.numPts;
+    reserve((size_t)(new_sz));
+    size_t cp_sz = data.numPts*sizeof(SiftPoint);
+    std::memcpy(&h_data[numPts], data.h_data, cp_sz);
+    safeCall(cudaMemcpy(&d_data[numPts], data.d_data, cp_sz, cudaMemcpyDeviceToDevice));
+    numPts = new_sz;
+    return *this;
 }

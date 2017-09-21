@@ -30,14 +30,17 @@ typedef struct SiftData {
   SiftPoint *h_data;  // Host (CPU) data
   SiftPoint *d_data;  // Device (GPU) data
 #endif
-  SiftData(int num = 4096, bool host = true, bool dev = true);
+  SiftData(int num = 4096);
+  SiftData(const SiftData &data);
   ~SiftData();
+  inline SiftPoint& operator [](size_t i) { return h_data[i]; }
   void resize(size_t new_size);
   void reserve(size_t new_capacity);
   void freeBuffers();
   inline void clear() { numPts = 0; }
   inline size_t size() { return (size_t)numPts; }
   inline size_t capacity() { return (size_t)maxPts; }
+  SiftData& append(const SiftData &data);
 } SiftData;
 
 void InitCuda(int devNum = 0);
