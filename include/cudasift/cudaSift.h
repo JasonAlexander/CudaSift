@@ -34,6 +34,7 @@ typedef struct SiftData {
   SiftData(const SiftData &data);
   ~SiftData();
   inline SiftPoint& operator [](size_t i) { return h_data[i]; }
+  SiftData& operator=(const SiftData &data);
   void resize(size_t new_size);
   void reserve(size_t new_capacity);
   void freeBuffers();

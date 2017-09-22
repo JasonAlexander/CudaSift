@@ -1079,12 +1079,22 @@ SiftData::SiftData(const SiftData &data)
 {
     InitSiftData(*this, data.maxPts, true, true);
     numPts = data.numPts;
-    std::memcpy(h_data, data.h_data, numPts*sizeof(SiftPoint));
-    safeCall(cudaMemcpy(d_data, data.d_data, numPts*sizeof(SiftPoint), cudaMemcpyDeviceToDevice));
+    if (h_data != NULL && data.h_data != NULL) std::memcpy(h_data, data.h_data, numPts*sizeof(SiftPoint));
+    if (d_data != NULL && data.d_data != NULL) safeCall(cudaMemcpy(d_data, data.d_data, numPts*sizeof(SiftPoint), cudaMemcpyDeviceToDevice));
 }
 
 SiftData::~SiftData() {
     FreeSiftData(*this);
+}
+
+SiftData& SiftData::operator=(const SiftData &data) {
+    if (this != &data) {
+        InitSiftData(*this, data.maxPts, true, true);
+        numPts = data.numPts;
+        if (h_data != NULL && data.h_data != NULL) std::memcpy(h_data, data.h_data, numPts*sizeof(SiftPoint));
+        if (d_data != NULL && data.d_data != NULL) safeCall(cudaMemcpy(d_data, data.d_data, numPts*sizeof(SiftPoint), cudaMemcpyDeviceToDevice));
+    }
+    return *this;
 }
 
 void SiftData::resize(size_t new_size) {
@@ -1130,8 +1140,8 @@ SiftData& SiftData::append(const SiftData &data) {
     int new_sz = numPts + data.numPts;
     reserve((size_t)(new_sz));
     size_t cp_sz = data.numPts*sizeof(SiftPoint);
-    std::memcpy(&h_data[numPts], data.h_data, cp_sz);
-    safeCall(cudaMemcpy(&d_data[numPts], data.d_data, cp_sz, cudaMemcpyDeviceToDevice));
+    if (h_data != NULL && data.h_data != NULL) std::memcpy(&h_data[numPts], data.h_data, cp_sz);
+    if (d_data != NULL && data.d_data != NULL) safeCall(cudaMemcpy(&d_data[numPts], data.d_data, cp_sz, cudaMemcpyDeviceToDevice));
     numPts = new_sz;
     return *this;
 }

@@ -20,6 +20,7 @@ include_directories(${CUDA_INCLUDE_DIRS})
 # include_directories(${OpenCV_INCLUDE_DIRS})
 
 file(GLOB_RECURSE cuda_sources src/*.cu)
+set(cpp_sources src/sift_engine.cpp)
 # set(cpp_sources src/mainSift.cpp src/geomFuncs.cpp)
 
 # set(CUDA_SEPARABLE_COMPILATION ON)
@@ -28,7 +29,7 @@ cuda_compile(cuda_objects ${cuda_sources})
 # cuda_add_executable(cudasift ${cuda_sources} ${cpp_sources})
 # add_executable(cudasift ${cuda_sources} ${cuda_objects} ${cpp_sources})
 add_library(cudasift SHARED ${cuda_sources} ${cuda_objects} ${cpp_sources})
-# target_link_libraries(cudasift ${CUDA_LIBRARIES})
-target_link_libraries(cudasift ${CUDA_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(cudasift ${CUDA_LIBRARIES})
+# target_link_libraries(cudasift ${CUDA_LIBRARIES} ${OpenCV_LIBS})
 
-set_target_properties(cudasift PROPERTIES LINKER_LANGUAGE CXX)
+# set_target_properties(cudasift PROPERTIES LINKER_LANGUAGE CXX)
