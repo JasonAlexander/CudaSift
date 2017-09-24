@@ -42,6 +42,8 @@ typedef struct SiftData {
   inline size_t size() { return (size_t)numPts; }
   inline size_t capacity() { return (size_t)maxPts; }
   SiftData& append(const SiftData &data);
+  void syncHostToDevice();
+  void syncDeviceToHost();
 } SiftData;
 
 void InitCuda(int devNum = 0);

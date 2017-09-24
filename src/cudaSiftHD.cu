@@ -1145,3 +1145,11 @@ SiftData& SiftData::append(const SiftData &data) {
     numPts = new_sz;
     return *this;
 }
+
+void SiftData::syncHostToDevice() {
+    if (h_data != NULL && d_data != NULL) safeCall(cudaMemcpy(d_data, h_data, numPts*sizeof(SiftPoint), cudaMemcpyHostToDevice));
+}
+
+void SiftData::syncDeviceToHost() {
+    if (h_data != NULL && d_data != NULL) safeCall(cudaMemcpy(h_data, d_data, numPts*sizeof(SiftPoint), cudaMemcpyDeviceToHost));
+}
