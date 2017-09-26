@@ -1,4 +1,4 @@
-#include <cudasift/sift_engine.hpp>
+#include <cuda_sift/sift_engine.hpp>
 
 SiftEngine::SiftEngine(size_t width, size_t height) {
     cuda_image_.Allocate((int)width, (int)height, iAlignUp((int)width, 128), false, NULL, NULL);

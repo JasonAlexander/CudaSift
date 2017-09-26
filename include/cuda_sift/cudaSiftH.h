@@ -1,8 +1,8 @@
 #ifndef CUDASIFTH_H
 #define CUDASIFTH_H
 
-#include <cudasift/cudautils.h>
-#include <cudasift/cudaImage.h>
+#include <cuda_sift/cudautils.h>
+#include <cuda_sift/cudaImage.h>
 
 //********************************************************//
 // CUDA SIFT extractor by Marten Bjorkman aka Celebrandil //

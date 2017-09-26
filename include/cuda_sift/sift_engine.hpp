@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <cudasift/cudaSift.h>
+#include <cuda_sift/cudaSift.h>
 
 class SiftEngine {
 public:

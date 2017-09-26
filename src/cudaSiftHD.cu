@@ -8,11 +8,11 @@
 #include <iostream>
 #include <algorithm>
 
-#include <cudasift/cudautils.h>
-#include <cudasift/cudaImage.h>
-#include <cudasift/cudaSift.h>
-#include <cudasift/cudaSiftD.h>
-#include <cudasift/cudaSiftH.h>
+#include <cuda_sift/cudautils.h>
+#include <cuda_sift/cudaImage.h>
+#include <cuda_sift/cudaSift.h>
+#include <cuda_sift/cudaSiftD.h>
+#include <cuda_sift/cudaSiftH.h>
 #include <driver_types.h>
 
 ///////////////////////////////////////////////////////////////////////////////
