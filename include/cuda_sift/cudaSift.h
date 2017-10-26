@@ -5,7 +5,7 @@
 
 typedef struct {
   float xpos;
-  float ypos;   
+  float ypos;
   float scale;
   float sharpness;
   float edgeness;
@@ -39,9 +39,9 @@ typedef struct SiftData {
   void reserve(size_t new_capacity);
   void freeBuffers();
   inline void clear() { numPts = 0; }
-  inline bool empty() { return numPts == 0; }
-  inline size_t size() { return (size_t)numPts; }
-  inline size_t capacity() { return (size_t)maxPts; }
+  inline bool empty() const { return numPts == 0; }
+  inline size_t size() const { return (size_t)numPts; }
+  inline size_t capacity() const { return (size_t)maxPts; }
   SiftData& append(const SiftData &data);
   void syncHostToDevice();
   void syncDeviceToHost();
