@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
+
+set(CMAKE_C_COMPILER /usr/bin/gcc-5 CACHE PATH "" FORCE)
+set(CMAKE_CXX_COMPILER /usr/bin/g++-5 CACHE PATH "" FORCE)
+add_compile_options(-std=c++11)
+
 project(CudaSift)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
